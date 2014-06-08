@@ -5,6 +5,7 @@
 
 .chat {
     display: none;
+    height: 100%;
 }
 
 .chat-display {
@@ -19,15 +20,14 @@
     position: relative;
     display: block;
     height: 80%;
-    padding: 5px;
     border: 1px solid #ccc;
-    box-sizing:border-box;
+    box-sizing: border-box;
+    overflow-y: auto;
 }
 
 .chat-messages .messages {
     height: 100%;
     width: 100%;
-    padding: 5px;
     box-sizing:border-box;
 }
 
@@ -40,7 +40,8 @@ textarea {
 	height: 100%;
     background-color: #f9f9f9;
     border: 1px solid #cccccc;
-    padding: 10px;
+    padding: 12px;
+    margin: -2px;
 	font:inherit;
 	color:inherit;
 	resize: none;
@@ -52,5 +53,89 @@ textarea {
     top: 0px;
     left: 70%;
     width: 30%;
+    height: 100%;
+}
+
+.history {
+    cursor: pointer;
+    font-size: 14px;
+    width: 100%;
+    padding: 5px;
+    box-sizing:border-box;
+    color: #aaa;
+    text-align: center;
+    background-color: #ddd;
+}
+.history:hover {
+    color: #888;
+}
+
+.messages .message > div {
+    float: left;
+    margin-right: 5px;
+}
+
+.message-date {
+    color: #aaa;
+}
+
+.message-name {
+}
+
+.message-message {
+    clear: left;
+    float: none;
+    font-weight: bold;
+}
+
+.messages .message .clear {
+    clear: both;
+}
+
+.messages .message {
+    padding: 5px;
+    width: 100%;
+    font-size: 13px;
+    clear: both;
+    box-sizing: border-box;
+}
+
+.messages .message:nth-child(even) {
+    background-color: #ddd !important;
+}
+
+#userbox {
+    height: 100%;
+    padding-top: 10px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+#userbox .client-name {
+    font-weight: bold;
+}
+
+#userbox .btn-leave {
+    width: 100px;
+    padding: 5px;
+    box-sizing: border-box;
+}
+
+#userbox .items {
+    text-align: center;
+    height: 50%;
+}
+
+#userbox .items h2 {
+    margin-right: 3px;
+    margin-left: 3px;
+    padding-bottom: 2px;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed;
+    box-sizing: border-box;
+}
+
+#userbox .items > div {
+    overflow-y: auto;
     height: 100%;
 }

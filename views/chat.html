@@ -2,7 +2,10 @@
 <html>
 <head>
 
-	<title>Private chat room | Tutorialzine Demo</title>
+	<title>Classic chat room</title>
+
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 	<link type="text/css" rel="stylesheet" href="/css/stylesheet.css" />
 	<link type="text/css" rel="stylesheet" href="/css/login.css" />
@@ -42,22 +45,24 @@
             <div class="chat-display items-list empty" id="chat">
                 <div class="chat-messages">
                     <div class="hint empty-message">no messages yet</div>
-                    <button class="history" type="button" id="history">load history</button>
+                    <div class="history" id="history">▲ load history ▲</div>
                     <div class="messages items" id="messages"></div>
                 </div>
                 <div class="chat-input">
-                    <textarea id=messagebox placeholder="Write something and press ctrl+enter"></textarea>
+                    <textarea id="messagebox" placeholder="Write something and press ctrl+enter"></textarea>
                 </div>
             </div>
 
-            <div class='users items-list empty'>
-                <div id="userbox">
-                    <label></label>
-                    <button type="button">leave</button>
+            <div class='users items-list empty' id="userbox">
+                <div class="client-panel">
+                    <div>
+                        logged in as <label class="client-name"></label>
+                    </div>
+                    <button type="button" class="btn-leave">leave</button>
                 </div>
                 <div class="hint empty-message">nobody in chat</div>
                 <div class="items">
-                    <h2>ONLINE</h2>
+                    <h2>USERS ONLINE</h2>
                     <div></div>
                 </div>
             </div>
@@ -67,15 +72,15 @@
 	</section>
 
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script src="../js/moment.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
 	<script src="/js/underscore-min.js"></script>
 	<script src="/js/backbone-min.js"></script>
-	<script src="../js/chat.js"></script>
+	<script src="/js/chat.js"></script>
 	<script src="/js/chat/User.js"></script>
 	<script src="/js/chat/Message.js"></script>
 	<script src="/js/chat/UserView.js"></script>
 	<script src="/js/chat/MessageView.js"></script>
+	<script src="/js/date-utils.min.js"></script>
 
 </body>
 

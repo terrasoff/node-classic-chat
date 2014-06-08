@@ -2,7 +2,7 @@ module.exports = function() {
     return {
         port: 8081,
         messages: {
-            pageSize: 3
+            pageSize: 5
         },
         db: {
             mongo: {

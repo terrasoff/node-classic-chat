@@ -1,8 +1,11 @@
-var Chat = Chat || {};
 var Backbone = Backbone || require('backbone');
 var _ = _ || require('underscore');
+
+var Chat = Chat || {};
+
 Chat.UserView = Backbone.View.extend(
 {
+    // TODO: move templates to view
     template: _.template('<div class="user"><%- name %></div>'),
 
     initialize: function()

@@ -1,6 +1,11 @@
-var Chat = Chat || {};
+/**
+ * Now this collection is delivering only history messages
+ * There are minds to link it with database
+ */
 var Backbone = Backbone || require('backbone');
 var _ = _ || require('underscore');
+
+var Chat = Chat || {};
 
 Chat.Messages = Backbone.Collection.extend(
 {

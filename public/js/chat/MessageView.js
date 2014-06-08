@@ -1,10 +1,18 @@
-var Chat = Chat || {};
 var Backbone = Backbone || require('backbone');
 var _ = _ || require('underscore');
 
+var Chat = Chat || {};
+
 Chat.MessageView = Backbone.View.extend(
 {
-    template: _.template('<div class="item"><%- message %></div>'),
+    className: "message",
+    // TODO: move templates to view
+    template: _.template(
+        '<div class="message-date"><%- new Date(created).toFormat("YYYY-MM-DD HH24:MM") %></div>' +
+        '<div class="message-name"><%- user.name %></div>' +
+        '<div class="message-message"><%- message %></div>'+
+        '<br class="clear" />'
+    ),
 
     initialize: function()
     {

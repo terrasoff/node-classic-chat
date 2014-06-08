@@ -1,13 +1,15 @@
 $(function()
 {
 	var socket = io.connect('/chat');
+    scenario = '';
 
 	// cache some jQuery objects
     var $login = $(".login");
+    var $loginInput = $login.find('input');
     var $users = $(".users");
     var $scenario = $(".scenario");
     var $userbox = $('#userbox');
-    var $mesaagebox = $('#messagebox');
+    var $messagebox = $('#messagebox');
     var $messages = $('#messages');
     var $btn_history = $('#history');
     var $chat = $('#chat');
@@ -15,23 +17,39 @@ $(function()
     var users = new Backbone.Collection();
     var messages = new Backbone.Collection();
 
-	socket.on('connect', function(data)
+	socket.on('connect', function()
     {
         setScenario('login');
+        $loginInput.focus();
 	});
 
+    // current list of online users
     socket.on('users', function(data)
     {
-        console.log("users");
-        for(var i in data.users)
-            users.add(new Chat.User(data.users[i]));
+        _.each(data.users, function(user) {
+            users.add(new Chat.User(user));
+        })
     });
 
+    // login to chat
     socket.on('login', function(data)
     {
-        console.dir(data);
-        $userbox.find('label').html(data.name);
+        // preload messages (if necessary)
+        if (!messages.length)  {
+            var total = data.messages.length;
+            if (total) {
+                for(var i=total-1; i>=0; i--)
+                    messages.push(new Chat.Message(data.messages[i]));
+
+                if ($chat.hasClass('empty')) $chat.removeClass('empty');
+            }
+        }
+
+        // prepare UI
         setScenario('chat');
+        $userbox.find('label').html(data.user.name);
+        $messagebox.val('');
+        $messagebox.focus();
     });
 
     socket.on('join', function(data)
@@ -40,6 +58,7 @@ $(function()
         users.add(new Chat.User(data));
     });
 
+    // some error happened
     socket.on('server:error', function(data)
     {
         alert(data.error);
@@ -48,24 +67,13 @@ $(function()
     socket.on('disconnect', function()
     {
         var model;
+        // no more users online
         while (model = users.first())
             model.destroy();
         setScenario('disconnect');
     });
 
-    // render messages
-    socket.on('messages', function(items)
-    {
-        var total = items.length;
-        if (total) {
-            for(var i=total-1; i>=0; i--)
-                messages.push(new Chat.Message(items[i]));
-
-            if ($chat.hasClass('empty')) $chat.removeClass('empty');
-        }
-    });
-
-    // render messages
+    // render loaded history messages
     socket.on('messages:history', function(items)
     {
         var total = items.length;
@@ -77,14 +85,14 @@ $(function()
         }
     });
 
+    // new message in chat
     socket.on('message:receive', function(data)
     {
         messages.push(new Chat.Message(data));
         if ($chat.hasClass('empty')) $chat.removeClass('empty');
     });
 
-
-    // leave chat event
+    // someone leaves chat
     socket.on('leave',function(data)
     {
         var model = users.findWhere(data);
@@ -99,7 +107,6 @@ $(function()
     // add (render) new user
     users.on('add', function(model)
     {
-        console.log("add user"); console.dir(model);
         // for each list of users (we have 2 lists)
         $users.each(function() {
             var view = new Chat.UserView({model: model});
@@ -108,22 +115,22 @@ $(function()
         });
     });
 
-    // add (render) new message
+    // add (render) new message in chat
     messages.on('add', function(model, collection, options) {
-//        console.log("render"); console.dir(options);
         var view = new Chat.MessageView({model: model});
         options.history != undefined
             ? $messages.prepend(view.$el)
             : $messages.append(view.$el);
     });
 
-    // leave chat scenario
+    // leave chat
     $userbox.find('button').on('click', function() {
         socket.emit('leave');
         setScenario('login');
     });
 
-    $login.find('input').on('keypress', function(e)
+    // try to login
+    $loginInput.on('keypress', function(e)
     {
         if (e.keyCode == 13)
         {
@@ -136,7 +143,8 @@ $(function()
         }
     });
 
-    $mesaagebox.on('keypress', function(e)
+    // send message to chat
+    $messagebox.on('keypress', function(e)
     {
         // send by ctrl+enter
         if (e.ctrlKey && e.keyCode === 10)
@@ -147,17 +155,24 @@ $(function()
                 var data = {message: message};
                 socket.emit('message:send', data);
             }
+            $messagebox.val('');
         }
     });
 
-    // leave chat scenario
+    // load history messages
     $btn_history.on('click', function(e) {
         socket.emit('history', {
-            since: messages.length ? messages.first().get('date') : null
+            since: messages.length ? messages.first().getDate() : null
         });
     });
 
+    /**
+     * Set current scenario
+     * Using for page management and some loginc
+     * @param name
+     */
     function setScenario(name) {
+        scenario = name;
         $scenario.attr('data-view', name);
     }
 
