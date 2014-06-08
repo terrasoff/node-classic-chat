@@ -1,139 +1,81 @@
 <!DOCTYPE html>
-
-<!--
-	This file is rendered by express.js, when the rurl /chat/123456 is visited in a browser.
-	It includes jQuery, socket.io.js (it is automatically served by the socket.io library), 
-	and a few more JavaScript files that you should check out.
--->
-
 <html>
-
 <head>
 
 	<title>Private chat room | Tutorialzine Demo</title>
 
-	<link type="text/css" rel="stylesheet" href="../css/stylesheet.css" />
+	<link type="text/css" rel="stylesheet" href="/css/stylesheet.css" />
+	<link type="text/css" rel="stylesheet" href="/css/login.css" />
+	<link type="text/css" rel="stylesheet" href="/css/chat.css" />
 	<link href="http://fonts.googleapis.com/css?family=Open+Sans Condensed:300italic,300,700" rel="stylesheet" type="text/css">
-
 
 </head>
 
 <body>
 
-	<header class="banner">
+	<section class="section scenario" data-view="">
 
-		<h1 class="bannertext">
-			<a href="http://tutorialzine.com/2014/03/nodejs-private-webchat/" id="logo">Tutorial<span>zine</span>: NODE.JS CHAT TUTORIAL</a>
-		</h1>
+        <div class="block disconnect">
+            <h2 class="disconnect-title">DISCONNECTED</h2>
+        </div>
 
-	</header>
-
-
-	<section class="section">
-
-		<!-- These elements are displayed as white info cards in the middle of the screen -->
-
-		<div class="connected">
-
-			<img src="../img/unnamed.jpg" id="creatorImage" />
-
-			<div class="infoConnected">
-				<h2>Who are you?</h2>
-				<br/>
-
-				<form class="loginForm">
-					<input type="text" id="yourName" placeholder="Your nick name" value="me" /><br/>
-					<input type="text" id="yourEmail" placeholder="Your email address" value="me@me.com" /><br/>
-					<input type="submit" id="yourEnter" value="ENTER" />
-				</form>
-
-			</div>
-
+		<div class="block login">
+            <div class='block-col'>
+                <h2>ENTER CHAT</h2>
+                <img src="../img/unnamed.jpg" class="user-icon" />
+                <div>
+                    <input type="text" id="yourName" placeholder="Enter your name" value="me" /><br/>
+                    <p class="press-enter">...and then press enter</p>
+                </div>
+            </div>
+            <div class='block-col users items-list empty'>
+                <div class="hint empty-message">nobody in chat</div>
+                <div class="items">
+                    <h2>ONLINE</h2>
+                    <div></div>
+                </div>
+            </div>
 		</div>
 
-		<div class="personinside">
+		<div class="chat">
 
-			<img src="../img/unnamed.jpg" id="ownerImage" />
+            <div class="chat-display items-list empty" id="chat">
+                <div class="chat-messages">
+                    <div class="hint empty-message">no messages yet</div>
+                    <button class="history" type="button" id="history">load history</button>
+                    <div class="messages items" id="messages"></div>
+                </div>
+                <div class="chat-input">
+                    <textarea id=messagebox placeholder="Write something and press ctrl+enter"></textarea>
+                </div>
+            </div>
 
-			<div class="infoInside">
-				<h2>Chat with <span class="nickname-chat"></span></h2>
-				<br/>
-
-				<form class="loginForm">
-					<input type="text" id="hisName" placeholder="Your nick name" value="me" /><br/>
-					<input type="text" id="hisEmail" placeholder="Your email address" value="me@me.com" /><br/>
-					<input type="submit" id="hisEnter" value="CHAT" />
-				</form>
-
-			</div>
-
-		</div>
-
-		<div class="invite-textfield">
-
-			<h2>Oops, there are no other people in this chat!</h2>
-			<h5>Invite a friend by sending them this URL</h5>
-
-			<div class="link">
-				<a title="Invite a friend" href="" id="link"></a>
-			</div>
-
-		</div>
-
-		<div class="left">
-
-			<img src="../img/unnamed.jpg" id="leftImage" />
-
-			<div class="info">
-				<h2><span class="nickname-left"></span> has left this chat.</h2>
-				<h5>Invite somebody else by sending them this page.</h5>
-			</div>
-
-		</div>
-
-		<div class="toomanypeople">
-
-			<h2>Oops, you can not join this chat!</h2>
-			<h5>There are already two people in it. Would you like to create a <a title="New Room" href="/create" id="room">new room</a>?</h5>
-
-		</div>
-
-		<div class="nomessages">
-
-			<img src="../img/unnamed.jpg" id="noMessagesImage" />
-
-			<div class="info">
-				<h2>You are chatting with <span class="nickname-chat"></span>.</h2>
-				<h5>Send them a message from the form below!</h5>
-			</div>
-
-		</div>
-
-		<div class="chatscreen">
-
-			<ul class="chats">
-				<!-- The chat messages will go here -->
-			</ul>
+            <div class='users items-list empty'>
+                <div id="userbox">
+                    <label></label>
+                    <button type="button">leave</button>
+                </div>
+                <div class="hint empty-message">nobody in chat</div>
+                <div class="items">
+                    <h2>ONLINE</h2>
+                    <div></div>
+                </div>
+            </div>
 
 		</div>
 
 	</section>
 
-	<footer>
-
-		<form id="chatform">
-
-			<textarea id="message" placeholder="Write something.."></textarea>
-			<input type="submit" id="submit" value="SEND"/>
-
-		</form>
-
-	</footer>
-
 	<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script src="../js/moment.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="/js/underscore-min.js"></script>
+	<script src="/js/backbone-min.js"></script>
 	<script src="../js/chat.js"></script>
+	<script src="/js/chat/User.js"></script>
+	<script src="/js/chat/Message.js"></script>
+	<script src="/js/chat/UserView.js"></script>
+	<script src="/js/chat/MessageView.js"></script>
 
 </body>
 

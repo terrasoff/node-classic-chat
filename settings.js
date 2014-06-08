@@ -1,14 +1,12 @@
 module.exports = function() {
     return {
         port: 8081,
+        messages: {
+            pageSize: 3
+        },
         db: {
             mongo: {
-                session: {
-                    db: 'test',
-                    collection: 'session',
-                    username: 'admin',
-                    password: 'admin'
-                }
+                dsn: "mongodb://user:user@localhost:27017/test"
             }
         },
         cookie: {

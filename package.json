@@ -1,16 +1,15 @@
 {
-    "name": "classic-chat",
-    "version": "0.0.1",
     "description": "Realtime chat",
     "main": "app.js",
     "author": "terrasoff",
     "license": "MIT",
     "dependencies": {
+        "mongodb": "1.4.5",
+        "underscore": "1.6.0",
+        "backbone": "~1.1.2",
         "bson": "0.2.8",
         "connect-mongo": "~0.4.0",
-        "session.socket.io": "http://github.com/eiriklv/session.socket.io/tarball/master",
-        "express": "4.4.0",
-        "gravatar": "~1.0.6",
-        "ejs": "~0.8.5"
+        "socket.io": "~1.0.4",
+        "express": "4.4.0"
     }
 }

@@ -1,90 +1,109 @@
-var gravatar = require('gravatar');
 var session = require('express-session');
-var MongoSession = require('connect-mongo')(session);
-var SessionSocket = require('session.socket.io');
-var bodyParser = require('cookie-parser')();
-
-function findCookie(handshakeInput, key) {
-    // fix for express 4.x (parse the cookie sid to extract the correct part)
-    var handshake = JSON.parse(JSON.stringify(handshakeInput)); // copy of object
-
-    if(handshake.secureCookies && handshake.secureCookies[key]) handshake.secureCookies = handshake.secureCookies[key].match(/\:(.*)\./).pop();
-    else if(handshake.signedCookies && handshake.signedCookies[key]) handshake.signedCookies[key] = handshake.signedCookies[key].match(/\:(.*)\./).pop();
-    else if(handshake.cookies && handshake.cookies[key]) handshake.cookies[key] = handshake.cookies[key].match(/\:(.*)\./).pop();
-
-    // original code
-    return (handshake.secureCookies && handshake.secureCookies[key])
-        || (handshake.signedCookies && handshake.signedCookies[key])
-        || (handshake.cookies && handshake.cookies[key]);
-}
+var _ = require('underscore');
+var Backbone = require('backbone');
+var User = require('./public/js/chat/User');
+var Messages = require('./public/js/chat/Messages');
 
 module.exports = function(app, settings)
 {
-    var sessionStore = new MongoSession(settings.db.mongo.session);
-
-    app.use(bodyParser);
-    app.use(session({
-        secret: settings.cookie.secret,
-        store: sessionStore
-    }));
-
-    var sessionSocket = new SessionSocket(
-            require('socket.io').listen(app.listen(settings.port)),
-            sessionStore,
-            bodyParser);
-
-    var users = [];
-
-    var chat = sessionSocket.of('/socket').on('connection', function (error, socket, session)
+    require('mongodb').MongoClient.connect(settings.db.mongo.dsn, function(err, db)
     {
-        if (error)
+        if (err) throw "Can't connect mongodb!";
+
+        var io = require('socket.io').listen(app.listen(settings.port));
+
+        var users = new Backbone.Collection();
+
+        var messages;
+
+        messages = new Messages(null,{
+            db: db,
+            limit: settings.messages.pageSize
+        });
+
+        io.of('/chat').on('connection', function (socket)
         {
-            console.log(error);
-        }
-        else
-        {
+            console.log("connected");
+
+            socket.emit('users', {
+                users: users.map(function(item) {return item;})
+            });
+
             socket.on('login', function(data)
             {
-                data.avatar = gravatar.url(data.avatar, {s: '140', r: 'x', d: 'mm'});
-                var sid = findCookie(socket.handshake, 'connect.sid');
+                if (users.findWhere(data)) {
+                    console.log("exists");
+                    socket.emit('server:error', {'error': 'login is busy'});
+                } else {
 
-                var pk = {_id: sid};
-                sessionStore.db.collection('session').findOne(pk, function(err, session) {
-                    session.data = data;
-                    console.dir(session);
+                    messages.load(function(err, docs) {
+                        socket.emit('messages', docs);
 
-                    sessionStore.db.collection('session').update(pk, {$set: {data: data}}, function(err) {
-                        if (err) console.warn(err.message);
-                        else socket.emit('chat', data);
+                        var model = new User(data);
+                        socket.user = model;
+                        users.add(socket.user);
+
+                        socket.broadcast.emit('join', model.attributes);
+                        socket.emit('login', model.attributes);
                     });
 
-                });
+                }
+            });
+
+            // Load history messages
+            socket.on('history', function(data)
+            {
+                if (socket.user)
+                {
+                    messages.load(function(err, docs) {
+                        socket.emit('messages:history', docs);
+                    }, data.since, true);
+                }
+                else socket.emit('server:error', {'error': 'need to login'});
             });
 
             // Somebody left the chat
             socket.on('disconnect', function() {
-
-                // Notify the other person in the chat room
-                // that his partner has left
-
-                socket.broadcast.to(this.room).emit('leave', {
-                    boolean: true,
-                    room: this.room,
-                    user: this.username,
-                    avatar: this.avatar
-                });
-
-                // leave the room
-                socket.leave(socket.room);
+                if (socket.user) {
+                    socket.broadcast.emit('leave', socket.user.attributes);
+                    socket.user.destroy();
+                }
+                else socket.emit('server:error', {'error': 'need to login'});
             });
 
-
-            // Handle the sending of messages
-            socket.on('msg', function(data){
-
-                // When the server receives a message, it sends it to the other person in the room.
-                socket.broadcast.to(socket.room).emit('receive', {msg: data.msg, user: data.user, img: data.img});
+            // Somebody left the chat
+            socket.on('leave', function() {
+                if (socket.user) {
+                    socket.broadcast.emit('leave', socket.user.attributes);
+                    socket.user.destroy();
+                }
+                else socket.emit('server:error', {'error': 'need to login'});
             });
-        }
+
+            // Send message to chat
+            socket.on('message:send', function(data)
+            {
+
+                if (socket.user)
+                {
+                    var data = {
+                        message: data.message,
+                        user: socket.user.attributes,
+                        date: new Date()
+                    };
+                    db.collection('messages').insert(data, function(err, docs) {
+                        if (err)
+                            socket.emit('error', err);
+                        else {
+                            socket.broadcast.emit('message:receive', data);
+                            socket.emit('message:receive', data);
+                        }
+                    });
+                }
+                else socket.emit('server:error', {'error': 'need to login'});
+            });
+
+        });
     });
+
 };
