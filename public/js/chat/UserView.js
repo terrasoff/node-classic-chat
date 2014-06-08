@@ -6,7 +6,7 @@ var Chat = Chat || {};
 Chat.UserView = Backbone.View.extend(
 {
     // TODO: move templates to view
-    template: _.template('<div class="user"><%- name %></div>'),
+    template: _.template('<div class="user"><%- username %></div>'),
 
     initialize: function()
     {

@@ -23,9 +23,9 @@ Chat.Messages = Backbone.Collection.extend(
         if (since == undefined) since = null;
         if (history == undefined) history = 0;
 
-        console.dir(since);
+//        console.dir(since);
         var condition = since
-            ? {date:{$lt: new Date(since)}}
+            ? {created: {$lt: new Date(since)}}
             : {};
 
         console.dir(condition);

@@ -1,5 +1,5 @@
 /** login */
-.block {
+.form {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -12,29 +12,31 @@
     border-radius: 3px;
     box-shadow:0px 3px 3px #e3e4e6;
     color: #637277;
-    display: none;
 }
 
-.block-col {
+.form-col:first-child {
+    background-color: #00f7ca;
+}
+
+.form-col {
     height: 100%;
     float: left;
     width: 49%
 }
-.block-col:first-child {
-    border-right: 1px dashed #ccc;
-}
 
-#yourName {
+.login input {
     text-align: center;
-    color: #aaa;
+    color: #555;
     font-size: 20px;
     width: 250px;
     height: 30px;
-    border-radius: 3px;
-    box-shadow:0px 3px 3px #e3e4e6;
     background-color: #f0f1f3;
-    border: 1px solid #d1d1d1;
     border-radius: 3px;
-    box-shadow:0px 3px 3px #e3e4e6;
     overflow: hidden;
+    margin-bottom: 3px;
+}
+
+.login h2,
+.login img {
+    margin-bottom: 10px;
 }

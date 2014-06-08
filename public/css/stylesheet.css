@@ -8,6 +8,7 @@ body {
 }
 
 /** scenarios */
+.scenario[data-view='auth'] .auth {display: block !important;}
 .scenario[data-view='login'] .login {display: block !important;}
 .scenario[data-view='chat'] .chat {display: block !important;}
 .scenario[data-view='disconnect'] .disconnect {display: block !important;}
@@ -55,4 +56,8 @@ users.items-list .items > div {
 
 .disconnect-title {
     padding-top: 130px;
+}
+
+.block {
+    display: none;
 }

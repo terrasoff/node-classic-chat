@@ -18,29 +18,32 @@
 
 	<section class="section scenario" data-view="">
 
-        <div class="block disconnect">
+        <div class="block form disconnect">
             <h2 class="disconnect-title">DISCONNECTED</h2>
         </div>
 
-		<div class="block login">
-            <div class='block-col'>
+		<div class="block form login">
+            <div class='form-col'>
                 <h2>ENTER CHAT</h2>
                 <img src="../img/unnamed.jpg" class="user-icon" />
-                <div>
-                    <input type="text" id="yourName" placeholder="Enter your name" value="me" /><br/>
+                <form data-action="login">
+                    <input type="text" name="username" placeholder="username" value="" /><br/>
+                    <input type="password" name="password" placeholder="password" value="" /><br/>
                     <p class="press-enter">...and then press enter</p>
-                </div>
+                </form>
             </div>
-            <div class='block-col users items-list empty'>
-                <div class="hint empty-message">nobody in chat</div>
-                <div class="items">
-                    <h2>ONLINE</h2>
-                    <div></div>
-                </div>
+            <div class='form-col'>
+                <h2>REGISTRATION</h2>
+                <img src="../img/unnamed.jpg" class="user-icon" />
+                <form data-action="registration">
+                    <input type="text" name="username" placeholder="username" value="" /><br/>
+                    <input type="password" name="password" placeholder="password" value="" /><br/>
+                    <p class="press-enter">...and then press enter</p>
+                </form>
             </div>
 		</div>
 
-		<div class="chat">
+		<div class="block chat">
 
             <div class="chat-display items-list empty" id="chat">
                 <div class="chat-messages">

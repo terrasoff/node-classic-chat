@@ -4,8 +4,7 @@ $(function()
     scenario = '';
 
 	// cache some jQuery objects
-    var $login = $(".login");
-    var $loginInput = $login.find('input');
+    var $form = $(".login form");
     var $users = $(".users");
     var $scenario = $(".scenario");
     var $userbox = $('#userbox');
@@ -20,7 +19,6 @@ $(function()
 	socket.on('connect', function()
     {
         setScenario('login');
-        $loginInput.focus();
 	});
 
     // current list of online users
@@ -47,7 +45,7 @@ $(function()
 
         // prepare UI
         setScenario('chat');
-        $userbox.find('label').html(data.user.name);
+        $userbox.find('label').html(data.user.username);
         $messagebox.val('');
         $messagebox.focus();
     });
@@ -61,6 +59,7 @@ $(function()
     // some error happened
     socket.on('server:error', function(data)
     {
+        console.dir(data.error);
         alert(data.error);
     });
 
@@ -130,16 +129,16 @@ $(function()
     });
 
     // try to login
-    $loginInput.on('keypress', function(e)
+    $form.on('keypress', function(e)
     {
         if (e.keyCode == 13)
         {
             e.preventDefault();
-            name = $.trim($(this).val());
-            if(name.length < 1)
-                alert("Please enter a nick name longer than 1 character!");
-            else
-                socket.emit('login', {name: name});
+            var data = {
+                username: $.trim($(this).find('[name="username"]').val()),
+                password: $(this).find('[name="password"]').val()
+            };
+            socket.emit('action:'+$(this).data('action'), data);
         }
     });
 
@@ -159,7 +158,7 @@ $(function()
         }
     });
 
-    // load history messages
+    // try to get history messages
     $btn_history.on('click', function(e) {
         socket.emit('history', {
             since: messages.length ? messages.first().getDate() : null
