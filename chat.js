@@ -25,19 +25,26 @@ module.exports = function(app, settings, db)
         // user try to login
         socket.on('action:login', function(data)
         {
-            if (data.username && data.password) {
-                db.collection('users').findOne({
-                    username: data.username,
-                    password: User.prototype.getPassword(data.password)
-                }, function(err, doc)
-                {
-                    if (err)
-                        socket.emit('server:error', {error: err});
-                    else if (!doc)
-                        socket.emit('server:error', {error: 'Wrong username or password'});
-                    else
-                        login(doc);
-                });
+            if (data.username && data.password)
+            {
+                // check uniqueness
+                if (users.findWhere({username: data.username})) {
+                    console.log("exists");
+                    socket.emit('server:error', {'error': 'User is in chat already'});
+                } else {
+                    db.collection('users').findOne({
+                        username: data.username,
+                        password: User.prototype.getPassword(data.password)
+                    }, function(err, doc)
+                    {
+                        if (err)
+                            socket.emit('server:error', {error: err});
+                        else if (!doc)
+                            socket.emit('server:error', {error: 'Wrong username or password'});
+                        else
+                            login(doc);
+                    });
+                }
             } else socket.emit('server:error', {error: 'Wrong username or password'});
         });
 
