@@ -5,15 +5,17 @@ Classic chat (single page application) on nodejs with socket.io and mongodb (usi
 # Installation
 
 * Install packages
-
-	sudo npm install
-
-* Make project setup using file *settings.js*
+```
+sudo npm install
+```
+* Make project setup using file **settings.js**
 
 * Create mongodb collections:
-- users
-- messages
+1. users
+2. messages
+
 
 # Run
-
+```
 	node app.js
+```
