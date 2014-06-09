@@ -175,4 +175,10 @@ $(function()
         $scenario.attr('data-view', name);
     }
 
+    $(window).on('beforeunload', function()
+    {
+        if (scenario === 'chat')
+            return 'Leave chat?';
+    });
+
 });
